@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Album Builder</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Header Styling */
+        header {
+            background: #2a9d8f;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        /* Main Content Styling */
+        main {
+            padding: 20px;
+        }
+
+        #album-builder {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        #album-builder h2 {
+            font-size: 1.8rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        input {
+            padding: 8px;
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #2a9d8f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #1f7a6d;
+        }
+
+        /* Gallery Section */
+        #album-gallery h2 {
+            font-size: 1.8rem;
+        }
+
+        #image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-item button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .image-item button:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #2a9d8f;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>My Online Album Builder</h1>
+    </header>
+    
+    <main>
+        <section id="album-builder">
+            <h2>Create a New Album</h2>
+            <form id="album-form">
+                <label for="album-name">Album Name:</label>
+                <input type="text" id="album-name" placeholder="Enter album name" required>
+                
+                <label for="album-image">Upload Image:</label>
+                <input type="file" id="album-image" accept="image/*" required>
+                
+                <button type="submit">Add Image to Album</button>
+            </form>
+        </section>
+        
+        <section id="album-gallery">
+            <h2>Your Album</h2>
+            <div id="image-gallery"></div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Online Album Builder</p>
+    </footer>
+
+    <script>
+        // JavaScript for adding images to the album
+        document.getElementById('album-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const albumName = document.getElementById('album-name').value;
+            const fileInput = document.getElementById('album-image');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select an image to upload!');
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const imageContainer = document.createElement('div');
+                imageContainer.classList.add('image-item');
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                imageContainer.appendChild(img);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = function() {
+                    imageContainer.remove();
+                };
+                imageContainer.appendChild(deleteButton);
+
+                document.getElementById('image-gallery').appendChild(imageContainer);
+            };
+
+            reader.readAsDataURL(file);
+
+            // Clear the form fields after submission
+            document.getElementById('album-name').value = '';
+            document.getElementById('album-image').value = '';
+        });
+    </script>
+</body>
+</html>

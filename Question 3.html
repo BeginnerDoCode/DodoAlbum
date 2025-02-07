@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .retry-btn {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="quizTitle">Multiple Choice Quiz</h2>
+        <p id="question"></p>
+        <div class="options" id="options"></div>
+        <button onclick="nextQuestion()">Next</button>
+        <button id="retryBtn" class="retry-btn" onclick="retryQuiz()" style="display:none;">Try Again</button>
+        <p id="score" style="display: none;"></p>
+    </div>
+
+    <script>
+        const questionsPool = [
+            { question: "What is 2 + 2?", options: ["3", "4", "5", "6"], answer: "4" },
+            { question: "What is the capital of France?", options: ["Paris", "London", "Berlin", "Madrid"], answer: "Paris" },
+            { question: "Which language is used for web development?", options: ["Python", "C++", "JavaScript", "Swift"], answer: "JavaScript" },
+            { question: "What is the square root of 16?", options: ["2", "4", "8", "16"], answer: "4" },
+            { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: "Mars" },
+            { question: "Which element has the chemical symbol 'O'?", options: ["Oxygen", "Osmium", "Ozone", "Oganesson"], answer: "Oxygen" },
+            { question: "What is the boiling point of water in Celsius?", options: ["90°C", "100°C", "110°C", "120°C"], answer: "100°C" },
+            { question: "Who wrote 'Romeo and Juliet'?", options: ["Shakespeare", "Dickens", "Hemingway", "Austen"], answer: "Shakespeare" },
+            { question: "What is the largest mammal?", options: ["Elephant", "Whale", "Giraffe", "Shark"], answer: "Whale" },
+            { question: "Which gas do plants use for photosynthesis?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], answer: "Carbon Dioxide" },
+            { question: "How many continents are there?", options: ["5", "6", "7", "8"], answer: "7" },
+            { question: "Which country is the Eiffel Tower located in?", options: ["USA", "Germany", "France", "Italy"], answer: "France" },
+            { question: "What is the capital of Japan?", options: ["Seoul", "Beijing", "Tokyo", "Kyoto"], answer: "Tokyo" },
+            { question: "What is the chemical formula for water?", options: ["CO2", "H2O", "O2", "H2"], answer: "H2O" },
+            { question: "Who invented the telephone?", options: ["Edison", "Tesla", "Bell", "Einstein"], answer: "Bell" },
+            { question: "Which animal is known for its ability to change color?", options: ["Chameleon", "Lion", "Elephant", "Penguin"], answer: "Chameleon" },
+            { question: "Which continent is known as the 'Dark Continent'?", options: ["Asia", "Africa", "Australia", "Europe"], answer: "Africa" },
+            { question: "Which ocean is the largest?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: "Pacific" },
+            { question: "What is the freezing point of water in Fahrenheit?", options: ["0°F", "32°F", "50°F", "100°F"], answer: "32°F" },
+            { question: "Who was the first President of the United States?", options: ["Lincoln", "Washington", "Jefferson", "Adams"], answer: "Washington" },
+            { question: "What is the speed of light?", options: ["300,000 km/s", "150,000 km/s", "500,000 km/s", "1,000,000 km/s"], answer: "300,000 km/s" },
+            { question: "What is the longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], answer: "Nile" },
+            { question: "Which is the smallest planet in our solar system?", options: ["Mars", "Earth", "Mercury", "Venus"], answer: "Mercury" },
+            { question: "Who painted the Mona Lisa?", options: ["Picasso", "Da Vinci", "Van Gogh", "Dali"], answer: "Da Vinci" },
+            { question: "What is the primary source of energy for the Earth?", options: ["Moon", "Wind", "Sun", "Ocean"], answer: "Sun" },
+            { question: "What is the capital of the USA?", options: ["Washington D.C.", "New York", "Los Angeles", "Chicago"], answer: "Washington D.C." },
+            { question: "Which instrument measures temperature?", options: ["Thermometer", "Barometer", "Hygrometer", "Altimeter"], answer: "Thermometer" },
+            { question: "What is the process by which plants make their food?", options: ["Respiration", "Photosynthesis", "Transpiration", "Osmosis"], answer: "Photosynthesis" },
+            { question: "Which country is famous for its pyramids?", options: ["Mexico", "Egypt", "India", "China"], answer: "Egypt" },
+            { question: "What is the largest country by land area?", options: ["USA", "China", "Canada", "Russia"], answer: "Russia" },
+            { question: "What is the capital of Canada?", options: ["Toronto", "Ottawa", "Vancouver", "Montreal"], answer: "Ottawa" },
+            { question: "Which fruit is known as the 'King of Fruits'?", options: ["Mango", "Apple", "Durian", "Banana"], answer: "Durian" },
+            { question: "What is the main ingredient in guacamole?", options: ["Tomato", "Onion", "Avocado", "Lemon"], answer: "Avocado" }
+        ];
+        
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuiz() {
+            selectedQuestions = questionsPool.sort(() => 0.5 - Math.random()).slice(0, 10);
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= selectedQuestions.length) {
+                document.getElementById("question").innerText = "Quiz Completed!";
+                document.getElementById("options").innerHTML = "";
+                document.getElementById("score").innerText = `Your Score: ${score}/10`;
+                document.getElementById("score").style.display = "block";
+
+                // Update title and add emoji
+                const quizTitle = document.getElementById("quizTitle");
+                if (score === 10) {
+                    quizTitle.style.color = "green";
+                    quizTitle.innerHTML = "Perfect Score! 🏆";
+                } else if (score >= 7) {
+                    quizTitle.style.color = "blue";
+                    quizTitle.innerHTML = "Great Job! 🎉";
+                } else {
+                    quizTitle.style.color = "red";
+                    quizTitle.innerHTML = "Better Luck Next Time! 😞";
+                }
+
+                // Show retry button
+                document.getElementById("retryBtn").style.display = "block";
+                return;
+            }
+            
+            let currentQuestion = selectedQuestions[currentQuestionIndex];
+            document.getElementById("question").innerText = currentQuestion.question;
+            let optionsHtml = "";
+            currentQuestion.options.forEach(option => {
+                optionsHtml += `<label><input type='radio' name='option' value='${option}'> ${option}</label><br>`;
+            });
+            document.getElementById("options").innerHTML = optionsHtml;
+        }
+
+        function nextQuestion() {
+            let selectedOption = document.querySelector("input[name='option']:checked");
+            if (!selectedOption) {
+                alert("Please select an answer");
+                return;
+            }
+            
+            if (selectedOption.value === selectedQuestions[currentQuestionIndex].answer) {
+                score++;
+            }
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function retryQuiz() {
+            score = 0;
+            currentQuestionIndex = 0;
+            document.getElementById("score").style.display = "none";
+            document.getElementById("retryBtn").style.display = "none";
+            loadQuiz();
+        }
+
+        window.onload = loadQuiz;
+    </script>
+</body>
+</html>

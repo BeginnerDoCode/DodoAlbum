@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            width: 50%;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input, select, textarea {
+            margin-top: 5px;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="reset"] {
+            background-color: #f44336;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        #message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Registration Form</h2>
+        <form id="registrationForm" onsubmit="return validateForm()" method="POST">
+            <label for="nic">NIC:</label>
+            <input type="text" id="nic" name="nic" required placeholder="Enter NIC">
+
+            <label for="sex">Sex:</label>
+            <select id="sex" name="sex" required>
+                <option value="">Select Sex</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required placeholder="Enter First Name" pattern="[A-Za-z]+" title="Only letters allowed">
+
+            <label for="surname">Surname:</label>
+            <input type="text" id="surname" name="surname" required placeholder="Enter Surname" pattern="[A-Za-z]+" title="Only letters allowed">
+
+            <label for="phone">Phone (7 digits):</label>
+            <input type="text" id="phone" name="phone" required placeholder="Enter Phone" maxlength="7" pattern="\d{7}" title="Phone number must be 7 digits">
+
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required placeholder="Enter Email Address">
+
+            <label for="preferences">Preferences:</label>
+            <textarea id="preferences" name="preferences" placeholder="Enter Preferences"></textarea>
+
+            <label for="country">Country:</label>
+            <select id="country" name="country" required>
+                <option value="">Select Country</option>
+                <option value="USA">USA</option>
+                <option value="Canada">Canada</option>
+                <option value="UK">UK</option>
+            </select>
+
+            <label for="username">Username (min 8 characters, include DOB from NIC):</label>
+            <input type="text" id="username" name="username" required placeholder="Enter Username">
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required placeholder="Enter Password">
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm Password">
+
+            <label for="preferencesCheckbox">I agree to the terms:</label>
+            <input type="checkbox" id="preferencesCheckbox" name="preferencesCheckbox" onchange="showMessage()">
+
+            <div id="message"></div>
+
+            <button type="submit">Register</button>
+            <button type="reset" onclick="warnReset()">Reset</button>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript for form validation and behavior
+        function validateForm() {
+            let nic = document.getElementById("nic").value;
+            let firstName = document.getElementById("firstName").value;
+            let surname = document.getElementById("surname").value;
+            let phone = document.getElementById("phone").value;
+            let email = document.getElementById("email").value;
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            let confirmPassword = document.getElementById("confirmPassword").value;
+            let sex = document.getElementById("sex").value;
+            let country = document.getElementById("country").value;
+            let preferencesCheckbox = document.getElementById("preferencesCheckbox").checked;
+
+            // Validate NIC
+            if (nic.length !== 10) {
+                alert("NIC must be 10 characters long.");
+                return false;
+            }
+
+            // Validate first name and surname (only letters)
+            if (!/^[A-Za-z]+$/.test(firstName) || !/^[A-Za-z]+$/.test(surname)) {
+                alert("First name and Surname must contain only letters.");
+                return false;
+            }
+
+            // Validate phone number (7 digits)
+            if (!/^\d{7}$/.test(phone)) {
+                alert("Phone number must be exactly 7 digits.");
+                return false;
+            }
+
+            // Validate email format
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if (!emailPattern.test(email)) {
+                alert("Email format is incorrect. Please use username@domain.com.");
+                return false;
+            }
+
+            // Validate username (min 8 characters, include DOB from NIC)
+            if (username.length < 8 || !nic.includes(username)) {
+                alert("Username must be at least 8 characters and include DOB from NIC.");
+                return false;
+            }
+
+            // Validate password confirmation
+            if (password !== confirmPassword) {
+                alert("Password and Confirm Password must match.");
+                return false;
+            }
+
+            // Check if preferences checkbox is selected
+            if (!preferencesCheckbox) {
+                alert("You must agree to the terms.");
+                return false;
+            }
+
+            // Proceed if all validations pass
+            alert("Registration Successful!");
+            window.location.href = "nextPage.html"; // Redirect to the next page
+            return true;
+        }
+
+        function warnReset() {
+            if (confirm("Are you sure you want to reset the form? All entered data will be lost.")) {
+                // Proceed with reset
+            } else {
+                // Do nothing if reset is canceled
+            }
+        }
+
+        function showMessage() {
+            let messageDiv = document.getElementById("message");
+            if (document.getElementById("preferencesCheckbox").checked) {
+                messageDiv.innerHTML = "You have agreed to the terms.";
+            } else {
+                messageDiv.innerHTML = "";
+            }
+        }
+    </script>
+</body>
+</html>
